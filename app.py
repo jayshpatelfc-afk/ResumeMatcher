@@ -1,13 +1,18 @@
 import os
 import re
 import sqlite3
+import tempfile
 from flask import Flask, render_template, request, jsonify
 from pypdf import PdfReader
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_DIR = os.path.join(BASE_DIR, 'database')
-DB_PATH = os.path.join(DB_DIR, 'resume_matching.db')
+DB_PATH = os.environ.get('DB_PATH') or os.path.join(tempfile.gettempdir(), 'resume_matching.db')
 os.makedirs(DB_DIR, exist_ok=True)
+
+# Keep the SQLite file in a writable location for serverless environments like Vercel.
+if os.access(DB_DIR, os.W_OK):
+    DB_PATH = os.path.join(DB_DIR, 'resume_matching.db')
 
 app = Flask(__name__)
 
@@ -202,4 +207,4 @@ def analyze():
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, port=5006)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)

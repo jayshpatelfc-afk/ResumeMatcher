@@ -27,8 +27,7 @@ async function loadJobs() {
 function updateButtonState() {
     const hasFiles = selectedFiles.length > 0;
     const hasJob = jobSelect.value !== '';
-    analyzeBtn.disabled = true;
-    return false;
+    analyzeBtn.disabled = !(hasFiles && hasJob);
 }
 
 function renderFiles() {
@@ -68,9 +67,40 @@ jobSelect.addEventListener('change', updateButtonState);
 loadJobs();
 
 analyzeBtn.addEventListener('click', async () => {
+    if (analyzeBtn.disabled || !selectedFiles.length || !jobSelect.value) {
+        return;
+    }
+
     analyzeBtn.disabled = true;
-    analyzeBtn.textContent = 'Match Candidates';
-    results.innerHTML = '<p class="placeholder">Matching is currently disabled.</p>';
+    analyzeBtn.textContent = 'Matching...';
+    results.innerHTML = '<p class="placeholder">Matching resumes...</p>';
+
+    const formData = new FormData();
+    formData.append('job_id', jobSelect.value);
+    selectedFiles.forEach((file) => {
+        formData.append('resumes', file);
+    });
+
+    try {
+        const response = await fetch('/analyze', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to analyze resumes.');
+        }
+
+        renderResults(data.candidates || []);
+    } catch (error) {
+        results.innerHTML = `<p class="placeholder">${error.message}</p>`;
+    } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = 'Match Candidates';
+        updateButtonState();
+    }
 });
 
 function renderResults(candidates) {
