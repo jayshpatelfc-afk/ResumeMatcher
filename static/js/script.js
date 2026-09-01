@@ -14,6 +14,7 @@ jobSelect.disabled = true;
 
 function renderJobOptions(filterText = '') {
     const term = filterText.trim().toLowerCase();
+    const currentValue = jobSelect.value;
 
     const filteredJobs = term
         ? allJobs.filter((job) => job.title.toLowerCase().includes(term))
@@ -25,6 +26,9 @@ function renderJobOptions(filterText = '') {
         const option = document.createElement('option');
         option.value = job.id;
         option.textContent = job.title;
+        if (String(currentValue) === String(job.id)) {
+            option.selected = true;
+        }
         jobSelect.appendChild(option);
     });
 
@@ -32,7 +36,10 @@ function renderJobOptions(filterText = '') {
         const none = document.createElement('option');
         none.value = '';
         none.textContent = 'No jobs found';
+        none.disabled = true;
         jobSelect.appendChild(none);
+    } else if (!currentValue && term) {
+        jobSelect.selectedIndex = 1;
     }
 
     jobSelect.disabled = filteredJobs.length === 0;
@@ -62,13 +69,20 @@ function updateButtonState() {
 
 jobSearchBtn.addEventListener('click', () => {
     renderJobOptions(jobSearch.value);
-    if (jobSelect.options.length > 0) {
-        jobSelect.selectedIndex = 1;
+    const firstValidOption = Array.from(jobSelect.options).find((option) => option.value !== '');
+    if (firstValidOption) {
+        jobSelect.value = firstValidOption.value;
     }
+    updateButtonState();
 });
 
 jobSearch.addEventListener('input', () => {
     renderJobOptions(jobSearch.value);
+    const firstValidOption = Array.from(jobSelect.options).find((option) => option.value !== '');
+    if (firstValidOption && jobSearch.value.trim()) {
+        jobSelect.value = firstValidOption.value;
+    }
+    updateButtonState();
 });
 
 function renderFiles() {
