@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Matcher Prototype</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Skill Match AI</h1>
+        </header>
+
+        <main class="panel-grid">
+            <section class="panel upload-panel">
+                <h2>Upload Resume PDFs</h2>
+                <label class="upload-box" for="resume-input">Choose files</label>
+                <input id="resume-input" type="file" accept=".pdf" multiple hidden />
+                <ul id="file-list" class="file-list"></ul>
+            </section>
+
+            <section class="panel form-panel">
+                <h2>Select Job</h2>
+                <select id="job-select">
+                    <option value="">Choose a job</option>
+                </select>
+                <button id="analyze-btn" class="primary-btn" disabled>Match Candidates</button>
+            </section>
+        </main>
+
+        <section class="results-panel">
+            <h2>Results</h2>
+            <div id="results" class="results-grid">
+                <p class="placeholder">Upload resumes and choose a job to see the match score.</p>
+            </div>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
