@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import sqlite3
@@ -15,29 +16,37 @@ if os.access(DB_DIR, os.W_OK):
     DB_PATH = os.path.join(DB_DIR, 'resume_matching.db')
 
 app = Flask(__name__)
+DEFAULT_JOBS_FILE = os.path.join(DB_DIR, 'default_jobs.json')
 
-DEFAULT_JOBS = [
-    ("Frontend Developer", "Build responsive web interfaces using HTML, CSS, JavaScript, React, and UI best practices."),
-    ("Backend Developer", "Develop REST APIs, server-side logic, databases, authentication, and scalable application services."),
-    ("Full Stack Developer", "Work across frontend and backend systems with modern frameworks, APIs, databases, and deployment workflows."),
-    ("Python Developer", "Write Python applications, automate scripts, optimize backend services, and build data-driven features."),
-    ("Java Developer", "Design and implement Java enterprise applications, APIs, and backend integrations with strong testing."),
-    ("Data Analyst", "Analyze datasets, create dashboards, interpret trends, and communicate insights using SQL and reporting tools."),
-    ("Data Scientist", "Build predictive models, analyze large data sets, and deploy machine learning solutions using Python and analytics."),
-    ("DevOps Engineer", "Automate deployments, monitor infrastructure, manage CI/CD, and ensure application reliability."),
-    ("QA Engineer", "Create automated tests, validate software quality, and improve release confidence across products."),
-    ("UX Designer", "Design intuitive user experiences, wireframes, prototypes, and accessible interfaces using research insights."),
-    ("Product Manager", "Prioritize product features, coordinate cross-functional teams, and translate customer needs into execution."),
-    ("Project Manager", "Manage timelines, resources, risks, and stakeholders to deliver successful business projects."),
-    ("Mobile Developer", "Build native or cross-platform mobile experiences with Android, iOS, and app performance optimization."),
-    ("Cloud Engineer", "Deploy applications to cloud platforms, manage infrastructure, security, scalability, and automation."),
-    ("Cybersecurity Analyst", "Monitor systems, analyze security threats, respond to incidents, and maintain compliance controls."),
-    ("AI Engineer", "Develop AI-powered features, integrate models, and optimize production systems with data and APIs."),
-    ("Business Analyst", "Gather requirements, document workflows, and support process improvement with stakeholder alignment."),
-    ("Machine Learning Engineer", "Train models, build pipelines, deploy intelligent features, and monitor model performance in production."),
-    ("Database Administrator", "Maintain databases, optimize queries, ensure backups, and enforce performance and security best practices."),
-    ("Systems Engineer", "Support infrastructure, troubleshoot systems, automate operations, and improve platform reliability."),
-]
+
+def load_jobs_from_db():
+    with get_db_connection() as conn:
+        rows = conn.execute('SELECT id, title, description FROM jobs ORDER BY id').fetchall()
+    return [{'id': row['id'], 'title': row['title'], 'description': row['description']} for row in rows]
+
+
+def load_default_jobs_from_file():
+    if not os.path.exists(DEFAULT_JOBS_FILE):
+        return []
+    with open(DEFAULT_JOBS_FILE, 'r', encoding='utf-8') as fh:
+        data = json.load(fh)
+    if not isinstance(data, list):
+        return []
+    return [(item['title'], item['description']) for item in data if item.get('title') and item.get('description')]
+
+
+def seed_default_jobs():
+    jobs = load_default_jobs_from_file()
+    if not jobs:
+        return
+    with get_db_connection() as conn:
+        existing = conn.execute('SELECT COUNT(*) FROM jobs').fetchone()[0]
+        if existing == 0:
+            conn.executemany(
+                'INSERT INTO jobs (title, description) VALUES (?, ?)',
+                jobs,
+            )
+            conn.commit()
 
 
 def get_db_connection():
@@ -70,13 +79,9 @@ def init_db():
             )
             """
         )
-        existing = conn.execute('SELECT COUNT(*) FROM jobs').fetchone()[0]
-        if existing < len(DEFAULT_JOBS):
-            conn.executemany(
-                'INSERT OR IGNORE INTO jobs (title, description) VALUES (?, ?)',
-                DEFAULT_JOBS,
-            )
         conn.commit()
+
+    seed_default_jobs()
 
 
 init_db()
@@ -129,9 +134,7 @@ def index():
 
 @app.route('/jobs')
 def jobs():
-    with get_db_connection() as conn:
-        rows = conn.execute('SELECT id, title, description FROM jobs ORDER BY id').fetchall()
-    return jsonify([{'id': row['id'], 'title': row['title'], 'description': row['description']} for row in rows])
+    return jsonify(load_jobs_from_db())
 
 
 @app.route('/analyze', methods=['POST'])

@@ -1,0 +1,22 @@
+[
+  {"title": "Frontend Developer", "description": "Build responsive web interfaces using HTML, CSS, JavaScript, React, and UI best practices."},
+  {"title": "Backend Developer", "description": "Develop REST APIs, server-side logic, databases, authentication, and scalable application services."},
+  {"title": "Full Stack Developer", "description": "Work across frontend and backend systems with modern frameworks, APIs, databases, and deployment workflows."},
+  {"title": "Python Developer", "description": "Write Python applications, automate scripts, optimize backend services, and build data-driven features."},
+  {"title": "Java Developer", "description": "Design and implement Java enterprise applications, APIs, and backend integrations with strong testing."},
+  {"title": "Data Analyst", "description": "Analyze datasets, create dashboards, interpret trends, and communicate insights using SQL and reporting tools."},
+  {"title": "Data Scientist", "description": "Build predictive models, analyze large data sets, and deploy machine learning solutions using Python and analytics."},
+  {"title": "DevOps Engineer", "description": "Automate deployments, monitor infrastructure, manage CI/CD, and ensure application reliability."},
+  {"title": "QA Engineer", "description": "Create automated tests, validate software quality, and improve release confidence across products."},
+  {"title": "UX Designer", "description": "Design intuitive user experiences, wireframes, prototypes, and accessible interfaces using research insights."},
+  {"title": "Product Manager", "description": "Prioritize product features, coordinate cross-functional teams, and translate customer needs into execution."},
+  {"title": "Project Manager", "description": "Manage timelines, resources, risks, and stakeholders to deliver successful business projects."},
+  {"title": "Mobile Developer", "description": "Build native or cross-platform mobile experiences with Android, iOS, and app performance optimization."},
+  {"title": "Cloud Engineer", "description": "Deploy applications to cloud platforms, manage infrastructure, security, scalability, and automation."},
+  {"title": "Cybersecurity Analyst", "description": "Monitor systems, analyze security threats, respond to incidents, and maintain compliance controls."},
+  {"title": "AI Engineer", "description": "Develop AI-powered features, integrate models, and optimize production systems with data and APIs."},
+  {"title": "Business Analyst", "description": "Gather requirements, document workflows, and support process improvement with stakeholder alignment."},
+  {"title": "Machine Learning Engineer", "description": "Train models, build pipelines, deploy intelligent features, and monitor model performance in production."},
+  {"title": "Database Administrator", "description": "Maintain databases, optimize queries, ensure backups, and enforce performance and security best practices."},
+  {"title": "Systems Engineer", "description": "Support infrastructure, troubleshoot systems, automate operations, and improve platform reliability."}
+]

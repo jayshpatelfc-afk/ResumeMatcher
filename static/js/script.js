@@ -7,26 +7,34 @@ const results = document.getElementById('results');
 let selectedFiles = [];
 
 analyzeBtn.disabled = true;
+jobSelect.disabled = true;
 
 async function loadJobs() {
     try {
         const response = await fetch('/jobs');
         const jobs = await response.json();
 
+        jobSelect.innerHTML = '<option value="">Choose a job</option>';
         jobs.forEach((job) => {
             const option = document.createElement('option');
             option.value = job.id;
             option.textContent = job.title;
             jobSelect.appendChild(option);
         });
+
+        jobSelect.disabled = jobs.length === 0;
+        updateButtonState();
     } catch (error) {
         console.error('Failed to load jobs:', error);
+        jobSelect.innerHTML = '<option value="">Choose a job</option>';
+        jobSelect.disabled = true;
+        analyzeBtn.disabled = true;
     }
 }
 
 function updateButtonState() {
     const hasFiles = selectedFiles.length > 0;
-    const hasJob = jobSelect.value !== '';
+    const hasJob = jobSelect.value !== '' && !jobSelect.disabled;
     analyzeBtn.disabled = !(hasFiles && hasJob);
 }
 
