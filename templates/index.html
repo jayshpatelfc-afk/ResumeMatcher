@@ -22,9 +22,18 @@
 
             <section class="panel form-panel">
                 <h2>Select Job</h2>
-                <select id="job-select">
-                    <option value="">Choose a job</option>
-                </select>
+
+                <div class="job-search-box">
+                    <input id="job-search" type="text" placeholder="Search job title..." aria-label="Search job title" />
+                    <button id="job-search-btn" type="button" class="secondary-btn">Search</button>
+                </div>
+
+                <div class="custom-select-wrap">
+                    <select id="job-select" size="10">
+                        <option value="">Choose a job</option>
+                    </select>
+                </div>
+
                 <button id="analyze-btn" class="primary-btn" disabled>Match Candidates</button>
             </section>
         </main>

@@ -3,29 +3,51 @@ const fileList = document.getElementById('file-list');
 const jobSelect = document.getElementById('job-select');
 const analyzeBtn = document.getElementById('analyze-btn');
 const results = document.getElementById('results');
+const jobSearch = document.getElementById('job-search');
+const jobSearchBtn = document.getElementById('job-search-btn');
 
 let selectedFiles = [];
+let allJobs = [];
 
 analyzeBtn.disabled = true;
 jobSelect.disabled = true;
+
+function renderJobOptions(filterText = '') {
+    const term = filterText.trim().toLowerCase();
+
+    const filteredJobs = term
+        ? allJobs.filter((job) => job.title.toLowerCase().includes(term))
+        : allJobs;
+
+    jobSelect.innerHTML = '<option value="">Choose a job</option>';
+
+    filteredJobs.forEach((job) => {
+        const option = document.createElement('option');
+        option.value = job.id;
+        option.textContent = job.title;
+        jobSelect.appendChild(option);
+    });
+
+    if (!filteredJobs.length) {
+        const none = document.createElement('option');
+        none.value = '';
+        none.textContent = 'No jobs found';
+        jobSelect.appendChild(none);
+    }
+
+    jobSelect.disabled = filteredJobs.length === 0;
+    updateButtonState();
+}
 
 async function loadJobs() {
     try {
         const response = await fetch('/jobs');
         const jobs = await response.json();
-
-        jobSelect.innerHTML = '<option value="">Choose a job</option>';
-        jobs.forEach((job) => {
-            const option = document.createElement('option');
-            option.value = job.id;
-            option.textContent = job.title;
-            jobSelect.appendChild(option);
-        });
-
-        jobSelect.disabled = jobs.length === 0;
-        updateButtonState();
+        allJobs = jobs;
+        renderJobOptions();
     } catch (error) {
         console.error('Failed to load jobs:', error);
+        allJobs = [];
         jobSelect.innerHTML = '<option value="">Choose a job</option>';
         jobSelect.disabled = true;
         analyzeBtn.disabled = true;
@@ -34,9 +56,20 @@ async function loadJobs() {
 
 function updateButtonState() {
     const hasFiles = selectedFiles.length > 0;
-    const hasJob = jobSelect.value !== '' && !jobSelect.disabled;
+    const hasJob = jobSelect.value !== '' && !jobSelect.disabled && jobSelect.value !== 'No jobs found';
     analyzeBtn.disabled = !(hasFiles && hasJob);
 }
+
+jobSearchBtn.addEventListener('click', () => {
+    renderJobOptions(jobSearch.value);
+    if (jobSelect.options.length > 0) {
+        jobSelect.selectedIndex = 1;
+    }
+});
+
+jobSearch.addEventListener('input', () => {
+    renderJobOptions(jobSearch.value);
+});
 
 function renderFiles() {
     fileList.innerHTML = '';
